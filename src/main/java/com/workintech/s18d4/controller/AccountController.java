@@ -3,14 +3,15 @@ package com.workintech.s18d4.controller;
 
 import com.workintech.s18d4.entity.Account;
 import com.workintech.s18d4.dto.AccountResponse;
+import com.workintech.s18d4.entity.Customer;
 import com.workintech.s18d4.service.AccountService;
+import com.workintech.s18d4.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -21,9 +22,13 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
+    //account yaratilirken customer da guncellenmesi gerekiyor o yuzden custome service de dependency olarak ekledim
+    @Autowired
+    private CustomerService customerService;
+
     @GetMapping
     public List<AccountResponse> getAllAccounts() {
-        return accountService.getAllAccounts().stream()
+        return accountService.findAll().stream()
                 .map(account -> new AccountResponse(
                         account.getId(),
                         account.getAccountName(),
@@ -35,27 +40,38 @@ public class AccountController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponse> getAccountById(@PathVariable Long id) {
-        Optional<Account> account = accountService.getAccountById(id);
-        return account.map(acc -> ResponseEntity.ok(new AccountResponse(acc.getId(), acc.getAccountName(), acc.getMoneyAmount(), acc.getCustomer())))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public AccountResponse getAccountById(@PathVariable Long id) {
+        Account account = accountService.find(id);
+        return new AccountResponse(account.getId(), account.getAccountName(), account.getMoneyAmount(), account.getCustomer());
     }
 
     @PostMapping("/{customerId}")
     public ResponseEntity<AccountResponse> createAccount(@RequestBody Account account) {
-        Account createdAccount = accountService.createAccount(account);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AccountResponse(createdAccount.getId(), createdAccount.getAccountName(), createdAccount.getMoneyAmount(), createdAccount.getCustomer()));
+        Account createdAccount = accountService.save(account);
+        //test 200 bekliyormus sen created 201 donmussun (dogrusu senin yaptigin istersen testi degis istersen 200 don bu sekilde)
+        return ResponseEntity.status(HttpStatus.OK).body(new AccountResponse(createdAccount.getId(), createdAccount.getAccountName(), createdAccount.getMoneyAmount(), createdAccount.getCustomer()));
     }
 
     @PutMapping("/{customerId}")
-    public ResponseEntity<AccountResponse> updateAccount(@PathVariable Long id,@RequestBody Account account) {
-        Account updatedAccount = accountService.updateAccount(id, account);
+    //endpointte parametre ismi neyse metod parametresinin ismi de ayni olmali -> customerId
+    public ResponseEntity<AccountResponse> updateAccount(@PathVariable Long customerId,@RequestBody Account account) {
+        //iligli customer'i buluyorum sonra accounts'a gelen accounti ekliyorum
+        Customer customer = customerService.find(customerId);
+        customer.getAccounts().add(account);
+
+        //account'in customerini da id'sinden buldugum customer yapiyorum
+        account.setCustomer(customer);
+
+        Account updatedAccount = accountService.save(account);
         return ResponseEntity.ok(new AccountResponse(updatedAccount.getId(), updatedAccount.getAccountName(), updatedAccount.getMoneyAmount(), updatedAccount.getCustomer()));
     }
 
+    //by metod account response donmesi bekleniyor o yuzden delete result'i account a atadim
+    //sonra normal account response olusturup dondum
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
-        accountService.deleteAccount(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<AccountResponse> deleteAccount(@PathVariable Long id) {
+        Account account = accountService.delete(id);
+        //noContent 204 doner, test 200 bekliyor
+        return ResponseEntity.ok(new AccountResponse(account.getId(), account.getAccountName(), account.getMoneyAmount(), account.getCustomer()));
     }
 }
