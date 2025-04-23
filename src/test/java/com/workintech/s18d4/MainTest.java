@@ -3,16 +3,15 @@ package com.workintech.s18d4;
 import com.workintech.s18d4.entity.Account;
 import com.workintech.s18d4.entity.Address;
 import com.workintech.s18d4.entity.Customer;
-import com.workintech.s18d4.repository.AccountRepository;
-import com.workintech.s18d4.repository.AddressRepository;
-import com.workintech.s18d4.repository.CustomerRepository;
+import com.workintech.s18d4.dto.AccountRepository;
+import com.workintech.s18d4.dto.AddressRepository;
+import com.workintech.s18d4.dto.CustomerRepository;
 import com.workintech.s18d4.service.AccountServiceImpl;
 import com.workintech.s18d4.service.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -371,10 +370,11 @@ class MainTest {
     @DisplayName("CustomerService::delete")
     void testDeleteCustomerService() {
         when(mockCustomerRepository.findById(1L)).thenReturn(Optional.of(sampleCustomerForCustomerServiceTest));
-        doNothing().when(mockCustomerRepository).delete(sampleCustomerForCustomerServiceTest);
         Customer deletedCustomer = customerService.delete(1L);
         assertEquals(sampleCustomerForCustomerServiceTest, deletedCustomer);
+        verify(mockCustomerRepository, times(1)).delete(sampleCustomerForCustomerServiceTest);
     }
+
 
     @Test
     @DisplayName("CustomerService::delete - Customer not found")

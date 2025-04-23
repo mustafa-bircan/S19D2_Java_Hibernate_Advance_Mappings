@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -115,7 +116,7 @@ class ControllerAndPropertiesTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is((int) sampleAccountForAccountControllerTest.getId())))
+                .andExpect(jsonPath("$[0].id", is((int) sampleAccountForAccountControllerTest.getId().intValue())))
                 .andExpect(jsonPath("$[0].accountName", is(sampleAccountForAccountControllerTest.getAccountName())));
 
         verify(accountService).findAll();
@@ -129,7 +130,7 @@ class ControllerAndPropertiesTest {
         mockMvc.perform(get("/account/{id}", sampleAccountForAccountControllerTest.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", is((int) sampleAccountForAccountControllerTest.getId())))
+                .andExpect(jsonPath("$.id", is((int) sampleAccountForAccountControllerTest.getId().intValue())))
                 .andExpect(jsonPath("$.accountName", is(sampleAccountForAccountControllerTest.getAccountName())));
 
         verify(accountService).find(sampleAccountForAccountControllerTest.getId());
@@ -145,7 +146,7 @@ class ControllerAndPropertiesTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleAccountForAccountControllerTest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is((int) sampleAccountForAccountControllerTest.getId())))
+                .andExpect(jsonPath("$.id", is((int) sampleAccountForAccountControllerTest.getId().intValue())))
                 .andExpect(jsonPath("$.accountName", is(sampleAccountForAccountControllerTest.getAccountName())));
 
         verify(customerService).find(sampleCustomerForAccountControllerTest.getId());
@@ -175,7 +176,7 @@ class ControllerAndPropertiesTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedAccount)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is((int) updatedAccount.getId())))
+                .andExpect(jsonPath("$.id", is((int) updatedAccount.getId().intValue())))
                 .andExpect(jsonPath("$.accountName", is(updatedAccount.getAccountName())))
                 .andExpect(jsonPath("$.moneyAmount", is(updatedAccount.getMoneyAmount())));
 
@@ -192,7 +193,7 @@ class ControllerAndPropertiesTest {
 
         mockMvc.perform(delete("/account/{id}", sampleAccountForAccountControllerTest.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is((int) sampleAccountForAccountControllerTest.getId())))
+                .andExpect(jsonPath("$.id", is((int) sampleAccountForAccountControllerTest.getId().intValue())))
                 .andExpect(jsonPath("$.accountName", is(sampleAccountForAccountControllerTest.getAccountName())))
                 .andExpect(jsonPath("$.moneyAmount", is(sampleAccountForAccountControllerTest.getMoneyAmount())));
 
@@ -211,7 +212,7 @@ class ControllerAndPropertiesTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleCustomerForCustomerControllerTest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is((int) expectedResponse.id())))
+                .andExpect(jsonPath("$.id", is((int) expectedResponse.id().intValue())))
                 .andExpect(jsonPath("$.email", is(expectedResponse.email())))
                 .andExpect(jsonPath("$.salary", is(expectedResponse.salary())));
 
