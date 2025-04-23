@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService{
+    //burda account service'ten sildigim metodlari burdan da sildim
 
     private AccountRepository accountRepository;
 
@@ -17,36 +18,6 @@ public class AccountServiceImpl implements AccountService{
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
-    }
-
-    @Override
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
-    }
-
-    @Override
-    public Optional<Account> getAccountById(Long id) {
-        return accountRepository.findById(id);
-    }
-
-    @Override
-    public Account createAccount(Account account) {
-        return accountRepository.save(account);
-    }
-
-    @Override
-    public Account updateAccount(Long accountId, Account account) {
-        Optional<Account> existingAccount = accountRepository.findById(accountId);
-        if (existingAccount.isPresent()) {
-            account.setId(accountId);
-            return accountRepository.save(account);
-        }
-        return null;
-    }
-
-    @Override
-    public void deleteAccount(Long id) {
-        accountRepository.deleteById(id);
     }
 
     @Override

@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+//testlerde endpoints customers degil customer
+//ayrica application properties de workintech zaten belirtilmis base url icin o yuzden burdan kaldirdim
 @RestController
-@RequestMapping("/workintech/customers")
+@RequestMapping("/customer")
 public class CustomerController {
 
     @Autowired
@@ -36,8 +38,11 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(@RequestBody Customer customer) {
-        Customer createdCustomer = customerService.createCustomer(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CustomerResponse(createdCustomer.getId(), createdCustomer.getEmail(), createdCustomer.getSalary()));
+        //burda createCustomer metodu yerine save metodunu kullandim ayni seyi yapmalarina ragmen nedense digeri hata verdi.
+        //bu sebepten account controller icin de save, find, update, delete isimli metodlari kullanabilirsin
+        Customer createdCustomer = customerService.save(customer);
+        //ayni sekilde test 200 bekliyormus, testi de degistirebilirsin
+        return ResponseEntity.status(HttpStatus.OK).body(new CustomerResponse(createdCustomer.getId(), createdCustomer.getEmail(), createdCustomer.getSalary()));
     }
 
     @PutMapping("/{id}")

@@ -12,10 +12,5 @@ public interface AccountService {
     Account find(Long id);
     Account delete(Long id);
 
-    List<Account> getAllAccounts();
-    Optional<Account> getAccountById(Long id);
-    Account createAccount(Account account);
-    Account updateAccount(Long accountId, Account account);
-    void deleteAccount(Long id);
-
+    //testlerde bu isimlerde metod istedigi icin digerlerini sildim, ayni isi yapiyorlarmis zaten sadece isimler farkli
 }
